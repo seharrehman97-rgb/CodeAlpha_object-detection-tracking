@@ -4,8 +4,9 @@ import time
 import cv2
 
 from src.detector import Detector
+from src.tracker import Tracker
 from src.video_source import VideoSource
-from src.visualizer import draw_detections
+from src.visualizer import draw_tracks
 
 
 def parse_args():
@@ -26,6 +27,7 @@ def main():
     source = int(args.source) if args.source.isdigit() else args.source
 
     detector = Detector(args.model, args.conf)
+    tracker = Tracker()
 
     with VideoSource(source) as video:
         print(f"Source opened: {video.width}x{video.height} @ {video.fps:.1f} FPS")
@@ -43,13 +45,14 @@ def main():
                 break
 
             detections = detector.detect(frame)
-            frame = draw_detections(frame, detections)
+            tracks = tracker.update(detections, frame)
+            frame = draw_tracks(frame, tracks)
 
             now = time.time()
             fps = 1.0 / (now - prev_time) if now > prev_time else 0.0
             prev_time = now
 
-            cv2.putText(frame, f"FPS: {fps:.1f}  Objects: {len(detections)}",
+            cv2.putText(frame, f"FPS: {fps:.1f}  Tracked: {len(tracks)}",
                         (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
             if writer:
