@@ -22,6 +22,7 @@ class VideoSource:
 
         fps = self.cap.get(cv2.CAP_PROP_FPS)
         self.fps = fps if fps and fps > 0 else 30.0
+        self.frame_count = max(int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT)), 0)
 
     def read(self):
         """Returns (success, frame). success is False at the end of a video."""
