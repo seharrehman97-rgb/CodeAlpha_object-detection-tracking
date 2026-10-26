@@ -35,18 +35,27 @@ class Pipeline:
         self.elapsed = 0.0
         self.video_fps = 30.0
         self.total_frames = 0
+        self.is_live = False
+        self.seconds_analyzed = 0.0
         self.seen_ids = set()
         self.counter = None
         self.zone = None
         self.log = None
 
-    def run(self, source):
-        """Generator: yields (annotated_frame, info) for every video frame."""
+    def run(self, source, max_seconds=None):
+        """Generator: yields (annotated_frame, info) for every frame.
+
+        source: a video file path, or an int for a webcam.
+        max_seconds: stop after this many seconds (None = whole video).
+        Time is video time for files and the real clock for a webcam.
+        """
         cfg = self.cfg
         tracker = Tracker(mode=cfg.tracker)
         trails = TrailManager(length=max(cfg.trail, 1))
+        self.is_live = isinstance(source, int)
         self.frames = 0
         self.elapsed = 0.0
+        self.seconds_analyzed = 0.0
         self.seen_ids = set()
 
         with VideoSource(source, cfg.width) as video:
@@ -57,13 +66,18 @@ class Pipeline:
             if cfg.zone:
                 polygon = rectangle_polygon(video.width, video.height, cfg.zone)
                 self.zone = ZoneMonitor(polygon, video.fps)
-            self.log = EventLog(video.fps)
+            self.log = EventLog()
             tag = f"{cfg.tracker}, imgsz {cfg.imgsz}"
             start = time.time()
 
             while True:
                 ok, frame = video.read()
                 if not ok:
+                    break
+
+                now = time.time() - start
+                timestamp = now if self.is_live else self.frames / video.fps
+                if max_seconds is not None and timestamp >= max_seconds:
                     break
 
                 t0 = time.perf_counter()
@@ -75,8 +89,12 @@ class Pipeline:
                 trails.update(tracks)
                 self.counter.update(tracks)
                 if self.zone:
+                    if self.is_live:
+                        # webcam: use the measured processing rate as fps
+                        self.zone.fps = max(self.frames, 1) / max(now, 1e-6)
                     self.zone.update(tracks)
-                self.log.update(self.frames, tracks, self.zone)
+                self.log.update(timestamp, tracks, self.zone)
+                self.seconds_analyzed = timestamp
 
                 if self.zone:
                     frame = draw_zone(frame, self.zone)
@@ -93,20 +111,21 @@ class Pipeline:
                                  (t1 - t0) * 1000, (t2 - t1) * 1000, tag)
 
                 info = {"frame": self.frames, "avg_fps": avg_fps,
-                        "tracked": len(tracks)}
+                        "tracked": len(tracks), "timestamp": timestamp}
                 yield frame, info
 
     def summary(self):
         """Final numbers for the run."""
         return {
             "frames": self.frames,
-            "avg_fps": self.frames / self.elapsed if self.elapsed else 0.0,
+            "seconds_analyzed": round(self.seconds_analyzed, 1),
+            "avg_fps": round(self.frames / self.elapsed, 2) if self.elapsed else 0.0,
             "unique_ids": len(self.seen_ids),
             "crossed_down": dict(self.counter.down) if self.counter else {},
             "crossed_up": dict(self.counter.up) if self.counter else {},
             "ids_that_entered_zone": len(self.zone.frames_inside) if self.zone else 0,
         }
 
-    def log_dataframe(self):
+    def log_dataframe(self, min_duration=0.0):
         """One row per tracked object, ready to save as CSV."""
-        return self.log.to_dataframe(self.zone, self.counter)
+        return self.log.to_dataframe(self.zone, self.counter, min_duration)

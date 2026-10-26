@@ -4,6 +4,12 @@ import cv2
 import numpy as np
 
 
+def format_time(seconds):
+    """Turns seconds into mm:ss text, e.g. 65.4 -> '01:05'."""
+    seconds = max(int(seconds), 0)
+    return f"{seconds // 60:02d}:{seconds % 60:02d}"
+
+
 class TrailManager:
     """Remembers the recent path of each tracked object."""
 
@@ -56,9 +62,9 @@ def rectangle_polygon(width, height, fractions):
 class ZoneMonitor:
     """Tracks which IDs are inside a polygon zone and how long they stay.
 
-    Time is measured in VIDEO time (frames / video fps), not wall-clock
-    time, so the result is correct even when processing is slower than
-    real time.
+    Dwell time = frames inside / fps. For video files fps is the video's
+    fps (video time). For a live webcam the pipeline updates fps to the
+    measured processing rate, so the time stays close to real time.
     """
 
     def __init__(self, polygon, fps):
@@ -83,38 +89,51 @@ class ZoneMonitor:
         return self.frames_inside.get(track_id, 0) / self.fps
 
 
-class EventLog:
-    """Collects one summary row per tracked object for the CSV report."""
+COLUMNS = ["track_id", "class", "appeared_at", "left_at", "first_seen_s",
+           "last_seen_s", "duration_s", "entered_zone", "zone_dwell_s",
+           "line_crossing"]
 
-    def __init__(self, fps):
-        self.fps = fps
+
+class EventLog:
+    """Collects one summary row per tracked object for the CSV report.
+
+    Timestamps are given in seconds by the pipeline (video time for files,
+    real clock for the webcam).
+    """
+
+    def __init__(self):
         self.records = {}
 
-    def update(self, frame_idx, tracks, zone=None):
+    def update(self, timestamp, tracks, zone=None):
         for t in tracks:
             tid = t["track_id"]
             rec = self.records.get(tid)
             if rec is None:
-                rec = {"class": t["label"], "first": frame_idx,
-                       "last": frame_idx, "entered_zone": False}
+                rec = {"class": t["label"], "first": timestamp,
+                       "last": timestamp, "entered_zone": False}
                 self.records[tid] = rec
-            rec["last"] = frame_idx
+            rec["last"] = timestamp
             if zone is not None and zone.is_inside(tid):
                 rec["entered_zone"] = True
 
-    def to_dataframe(self, zone=None, counter=None):
+    def to_dataframe(self, zone=None, counter=None, min_duration=0.0):
         import pandas as pd
 
         rows = []
         for tid, rec in self.records.items():
+            duration = rec["last"] - rec["first"]
+            if duration < min_duration:
+                continue  # flicker: seen too briefly to be a real visit
             rows.append({
                 "track_id": tid,
                 "class": rec["class"],
-                "first_seen_s": round(rec["first"] / self.fps, 2),
-                "last_seen_s": round(rec["last"] / self.fps, 2),
-                "duration_s": round((rec["last"] - rec["first"]) / self.fps, 2),
+                "appeared_at": format_time(rec["first"]),
+                "left_at": format_time(rec["last"]),
+                "first_seen_s": round(rec["first"], 2),
+                "last_seen_s": round(rec["last"], 2),
+                "duration_s": round(duration, 2),
                 "entered_zone": rec["entered_zone"],
                 "zone_dwell_s": round(zone.dwell_seconds(tid), 2) if zone else 0.0,
                 "line_crossing": counter.direction.get(tid, "none") if counter else "none",
             })
-        return pd.DataFrame(rows)
+        return pd.DataFrame(rows, columns=COLUMNS)

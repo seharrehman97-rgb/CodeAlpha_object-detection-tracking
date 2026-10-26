@@ -9,6 +9,10 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Object detection and tracking")
     parser.add_argument("--source", default="0",
                         help="Webcam index (e.g. 0) or path to a video file")
+    parser.add_argument("--seconds", type=float, default=None,
+                        help="Analyze only the first N seconds (default: all)")
+    parser.add_argument("--min-duration", type=float, default=0.0,
+                        help="Drop report rows for objects seen less than N seconds")
     parser.add_argument("--save", default=None,
                         help="Optional path to save the output video")
     parser.add_argument("--csv", default=None,
@@ -50,7 +54,7 @@ def main():
     pipeline = Pipeline(cfg)
 
     writer = None
-    frames = pipeline.run(source)
+    frames = pipeline.run(source, max_seconds=args.seconds)
     for frame, info in frames:
         if args.save and writer is None:
             h, w = frame.shape[:2]
@@ -73,7 +77,7 @@ def main():
         print(f"{key:22}: {value}")
 
     if args.csv:
-        df = pipeline.log_dataframe()
+        df = pipeline.log_dataframe(args.min_duration)
         df.to_csv(args.csv, index=False)
         print(f"\nSaved {len(df)} rows to {args.csv}")
 
