@@ -20,26 +20,23 @@ PRESETS = {
 # Rough CPU throughput (frames per second) per preset, for time estimates.
 THROUGHPUT = {"Fast": 9.0, "Balanced": 5.0, "Accurate": 3.5}
 
-CSS = """
-<style>
-.hero-title {
-    font-size: 2.4rem; font-weight: 800; margin-bottom: 0;
-    background: linear-gradient(90deg, #00D1B2, #4F8BF9);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.hero-sub { color: #9AA4B2; margin-top: 0.2rem; margin-bottom: 1.2rem; }
-[data-testid="stMetric"] {
-    background: #1A1F2B; border: 1px solid #2A3142;
-    border-radius: 14px; padding: 14px 18px;
-}
-</style>
-"""
-st.markdown(CSS, unsafe_allow_html=True)
-st.markdown('<div class="hero-title">Vision Tracker</div>', unsafe_allow_html=True)
-st.markdown('<div class="hero-sub">Detect, track and analyze people and vehicles '
-            'in video, then download a report of who appeared and when they '
-            'left.</div>', unsafe_allow_html=True)
+from pathlib import Path
 
+st.markdown(f"<style>{Path('assets/style.css').read_text(encoding='utf-8')}</style>",
+            unsafe_allow_html=True)
+
+hero_text, hero_art = st.columns([1.4, 1])
+with hero_text:
+    st.markdown(
+        '<div class="kicker">Real-time object detection and tracking</div>'
+        '<div class="hero-h1">Follow Every<br>'
+        '<span class="nowrap"><span class="hl">Moving</span> Thing</span></div>'
+        '<p class="hero-p">Upload a clip or open the webcam. Vision Tracker finds '
+        'every person and vehicle, gives each one an identity, and tells you '
+        'exactly when they appeared and when they left.</p>',
+        unsafe_allow_html=True)
+with hero_art:
+    st.image("assets/lens.svg")
 
 def run_analysis(mode, uploaded, seconds, preset, classes, conf, line_y,
                  show_trails, zone, min_duration, view):

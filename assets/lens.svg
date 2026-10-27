@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+<defs>
+<linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a22b8" stop-opacity=".9"/><stop offset="1" stop-color="#3b0a6b" stop-opacity=".12"/></linearGradient>
+<radialGradient id="gl" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#3b0a6b" stop-opacity=".9"/><stop offset="1" stop-color="#3b0a6b" stop-opacity="0"/></radialGradient>
+<filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+<ellipse id="p1" cx="0" cy="-118" rx="62" ry="128" fill="url(#pg)" stroke="#9b6bff" stroke-opacity=".28"/>
+<ellipse id="p2" cx="0" cy="-92" rx="40" ry="98" fill="url(#pg)" fill-opacity=".7" stroke="#9b6bff" stroke-opacity=".2"/>
+</defs>
+<circle cx="300" cy="300" r="290" fill="url(#gl)"/>
+<g transform="translate(300 300)">
+<use href="#p1"/><use href="#p1" transform="rotate(45)"/><use href="#p1" transform="rotate(90)"/><use href="#p1" transform="rotate(135)"/><use href="#p1" transform="rotate(180)"/><use href="#p1" transform="rotate(225)"/><use href="#p1" transform="rotate(270)"/><use href="#p1" transform="rotate(315)"/>
+<use href="#p2" transform="rotate(22.5)"/><use href="#p2" transform="rotate(67.5)"/><use href="#p2" transform="rotate(112.5)"/><use href="#p2" transform="rotate(157.5)"/><use href="#p2" transform="rotate(202.5)"/><use href="#p2" transform="rotate(247.5)"/><use href="#p2" transform="rotate(292.5)"/><use href="#p2" transform="rotate(337.5)"/>
+</g>
+<circle cx="300" cy="300" r="118" fill="none" stroke="#00e5ff" stroke-opacity=".35"/>
+<circle cx="300" cy="300" r="172" fill="none" stroke="#00e5ff" stroke-opacity=".22" stroke-dasharray="2 8" stroke-linecap="round"/>
+<circle cx="300" cy="300" r="232" fill="none" stroke="#00e5ff" stroke-opacity=".12"/>
+<circle cx="300" cy="300" r="66" fill="#050505" stroke="#00e5ff" stroke-width="1.5"/>
+<circle cx="300" cy="300" r="24" fill="#00e5ff" filter="url(#soft)" opacity=".9"/>
+<circle cx="300" cy="300" r="20" fill="#00e5ff"/>
+<path d="M300 210V250M300 350V390M210 300H250M350 300H390" stroke="#00e5ff" stroke-opacity=".6"/>
+<path d="M60 376V360H76M164 360H180V376M180 514V530H164M76 530H60V514" fill="none" stroke="#00e5ff" stroke-width="2"/>
+<rect x="60" y="338" width="108" height="20" fill="#00e5ff"/><text x="68" y="352" font-family="sans-serif" font-size="11" font-weight="500" fill="#050505">person · ID 07</text>
+<path d="M420 136V120H436M524 120H540V136M540 184V200H524M436 200H420V184" fill="none" stroke="#00e5ff" stroke-width="2"/>
+<rect x="420" y="98" width="88" height="20" fill="#00e5ff"/><text x="428" y="112" font-family="sans-serif" font-size="11" font-weight="500" fill="#050505">car · ID 12</text>
+<path d="M120 560C150 470 230 430 262 342" fill="none" stroke="#00e5ff" stroke-opacity=".7" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round"/>
+<circle cx="120" cy="560" r="3.5" fill="#00e5ff"/>
+<circle cx="520" cy="470" r="2" fill="#00e5ff" opacity=".6"/><circle cx="90" cy="180" r="2.5" fill="#00e5ff" opacity=".5"/><circle cx="470" cy="540" r="1.5" fill="#F3EEFA" opacity=".6"/>
+</svg>

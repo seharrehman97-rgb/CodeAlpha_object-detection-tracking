@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+.stApp {
+  background: radial-gradient(ellipse 60% 55% at 85% 0%, rgba(59,10,107,.85) 0%, rgba(59,10,107,0) 100%), #050505;
+  font-family: 'DM Sans', sans-serif;
+}
+.stMarkdown p, .stMarkdown li, [data-testid="stWidgetLabel"] p, [data-testid="stCaptionContainer"] {
+  font-family: 'DM Sans', sans-serif !important;
+}
+[data-testid="stSidebar"] { background: #0b0512; border-right: 1px solid rgba(255,255,255,.08); }
+.stApp h1, .stApp h2, .stApp h3 { font-family: 'Montserrat', sans-serif !important; font-weight: 300 !important; }
+
+.stApp .kicker { font-family: 'Montserrat', sans-serif !important; font-size: .7rem; letter-spacing: .3em; text-transform: uppercase; color: #9C93AD; margin-bottom: 1.2rem; }
+.stApp .hero-h1 {
+  font-family: 'Montserrat', sans-serif !important; font-weight: 300 !important;
+  font-size: clamp(2.2rem, 4.2vw, 4rem) !important; line-height: 1.1 !important;
+  letter-spacing: -.01em !important; color: #F3EEFA !important; margin: 0 !important; padding: 0 !important;
+}
+.stApp .hero-h1 .hl { color: #00e5ff !important; font-style: italic; font-weight: 400; }
+.stApp .hero-h1 .nowrap { white-space: nowrap; }
+.stApp .hero-p { max-width: 30rem; color: #CFC6E0; font-weight: 300; line-height: 1.7; margin-top: 1.6rem !important; }
+
+[data-testid="stMetric"] { background: rgba(59,10,107,.22); border: 1px solid rgba(0,229,255,.18); border-radius: 16px; padding: 14px 18px; }
+button[kind="primary"] { background: #00e5ff; border: none; border-radius: 999px; font-weight: 600; letter-spacing: .08em; }
+button[kind="primary"] p { color: #050505; }
+button[kind="primary"]:hover { background: #5af0ff; }
