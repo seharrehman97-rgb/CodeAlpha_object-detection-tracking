@@ -8,8 +8,20 @@ from src.pipeline import Config, Pipeline
 
 st.set_page_config(page_title="Vision Tracker", page_icon="🎯", layout="wide")
 
-CLASS_OPTIONS = {"Person": 0, "Bicycle": 1, "Car": 2,
-                 "Motorcycle": 3, "Bus": 5, "Truck": 7}
+CLASS_OPTIONS = {
+    # people and transport
+    "Person": 0, "Bicycle": 1, "Car": 2, "Motorcycle": 3, "Bus": 5, "Truck": 7,
+    # bags and carried items
+    "Backpack": 24, "Umbrella": 25, "Handbag": 26, "Suitcase": 28,
+    # electronics
+    "Cell phone": 67, "Laptop": 63, "TV": 62, "Remote": 65,
+    "Keyboard": 66, "Mouse": 64,
+    # everyday items
+    "Bottle": 39, "Cup": 41, "Book": 73, "Clock": 74, "Chair": 56,
+    "Couch": 57, "Dining table": 60, "Potted plant": 58, "Scissors": 76,
+    # animals
+    "Dog": 16, "Cat": 15, "Bird": 14,
+}
 
 # Presets come from the benchmark: model size and input size vs speed.
 PRESETS = {
